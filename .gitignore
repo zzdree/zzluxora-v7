@@ -1,0 +1,28 @@
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# PyInstaller & Build Outputs (Re-creatable from source)
+build/
+dist/
+results/
+installer/Output/
+*.spec.bak
+
+# OS & Temporary
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.tmp
+logs/
+*.log

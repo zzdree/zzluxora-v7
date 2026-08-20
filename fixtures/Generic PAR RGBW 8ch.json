@@ -1,0 +1,15 @@
+{
+  "name": "Generic PAR RGBW 8ch",
+  "manufacturer": "Generic",
+  "channels": 8,
+  "channel_map": [
+    {"ch": 1, "label": "Dimmer"},
+    {"ch": 2, "label": "Red"},
+    {"ch": 3, "label": "Green"},
+    {"ch": 4, "label": "Blue"},
+    {"ch": 5, "label": "White"},
+    {"ch": 6, "label": "Program"},
+    {"ch": 7, "label": "Speed"},
+    {"ch": 8, "label": "—"}
+  ]
+}
