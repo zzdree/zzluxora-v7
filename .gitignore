@@ -1,4 +1,4 @@
-# Virtual environments
+# Virtual Environments
 .venv/
 env/
 venv/
@@ -6,7 +6,7 @@ venv/
 # Python Bytecode & Cache
 __pycache__/
 *.py[cod]
-*.class
+*$py.class
 .pytest_cache/
 .coverage
 htmlcov/

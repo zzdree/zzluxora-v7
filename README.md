@@ -1,90 +1,182 @@
-# 🎛️ ZZLUXORA v7.0.0: Audio-Reactive Lighting Controller
+# 🎛️ zzluxora v7.0.0
 
-> **Native PySide6 (Qt6) + Art-Net DMX512 Stage Lighting Control with Audio-Reactive Scene Generation.**  
-> Edisi rilis baseline skripsi dengan tema visual *Emerald Green Accent* (#2ecc71) dan integrasi Windows Installer.
+> **Native PySide6 (Qt6) + Art-Net DMX512 Lighting Control with Audio-Reactive Scene Generation.**  
+> An audio engineer's lighting desk at 3 AM — grandMA3 ergonomics meets QLC+ agility. Edisi rilis baseline skripsi dengan tema visual *Emerald Green Accent* (`#2ecc71`) dan integrasi Windows Inno Setup Installer.
+
+---
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![GUI](https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt6-41CD52?style=flat-square&logo=qt&logoColor=white)
-![Protocol](https://img.shields.io/badge/Protocol-Art--Net%20DMX512-orange?style=flat-square)
-![Audio](https://img.shields.io/badge/Audio-Librosa%20%2B%20NumPy-blue?style=flat-square)
+![Protocol](https://img.shields.io/badge/Protocol-Art--Net_4_DMX512_(UDP_6454)-orange?style=flat-square)
+![Audio](https://img.shields.io/badge/Audio-Librosa_%2B_NumPy_%2B_SciPy-blue?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Windows_10%2F11-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
 
-## 📖 Deskripsi Proyek
-
-**ZZLUXORA v7.0.0** adalah sistem kontrol pencahayaan panggung cerdas berbasis desktop Windows. Aplikasi ini mampu menganalisis file audio musik secara komputasional (*Music Information Retrieval / MIR*) dan mengonversinya secara otomatis menjadi sinyal kontrol visual lampu panggung (*Moving Head Beam, PAR LED RGBW, Strobe*) melalui protokol jaringan **Art-Net UDP (Port 6454)**.
-
----
-
-## ✨ Fitur Utama Versi 7.0.0
-
-- 🎧 **Real-Time Audio Analysis:** Ekstraksi fitur akustik musik meliputi RMS Energy, Tempo (BPM), Onset Detection, MFCC, dan Spectral Centroid menggunakan **Librosa**.
-- 🧠 **Mood Classification:** Pemetaan nuansa emosi musik ke dalam koordinat afektif 2D **Valence-Arousal (Russell Circumplex Model)**.
-- 🎨 **HSV-RGBW Color Engine:** Algoritma konversi ruang warna dari Hue-Saturation-Value ke 4 kanal warna fisik (*Red, Green, Blue, White*) untuk lampu PAR LED.
-- 🎚️ **DMX512 Channel Mixer:** Fader mixer kontrol kanal 0-255 lengkap dengan master intensity blackout safety.
-- 📟 **Fixture Manager & Auto-Patch:** Pengaturan profil fixture (Moving Head 16ch, PAR LED 8ch/4ch) dengan dialog auto-patch alamat DMX.
-- 🖥️ **2D Stage Canvas:** Pratinjau visual posisi lampu di atas panggung secara interaktif.
-- 📦 **Windows Inno Setup Installer:** Skrip pembuatan installer .exe mandiri untuk Program Files dengan konfigurasi AppData.
+## 📑 Daftar Isi
+1. [Gambaran Umum Proyek](#-1-gambaran-umum-proyek)
+2. [Fitur Unggulan v7.0.0](#-2-fitur-unggulan-v700)
+3. [Arsitektur Sistem & Modul Core](#-3-arsitektur-sistem--modul-core)
+4. [Katalog Direktori](#-4-katalog-direktori)
+5. [Panduan Instalasi & Menjalankan](#-5-panduan-instalasi--menjalankan)
+6. [Kompilasi Standalone .EXE & Installer](#-6-kompilasi-standalone-exe--installer)
+7. [Pengujian Matematis Model (Unit Tests)](#-7-pengujian-matematis-model-unit-tests)
+8. [Lisensi & Hak Cipta](#-8-lisensi--hak-cipta)
 
 ---
 
-## 📁 Struktur Arsitektur Modul
+## 📖 1. Gambaran Umum Proyek
 
-`	ext
+**zzluxora v7.0.0** adalah perangkat lunak desktop native Windows untuk pengendalian pencahayaan panggung cerdas (*intelligent stage lighting controller*). Aplikasi ini dirancang tanpa *webview* maupun Electron, menggunakan murni **PySide6 / Qt6 C++ bindings** untuk mencapai performa rendering 60 FPS yang ringan dan deterministik.
+
+Sistem bekerja dengan mengekstrak parameter akustikal musik secara komputasional (*Music Information Retrieval / MIR*), memetakannya ke ruang afektif emosi **Valence-Arousal (Russell Circumplex Model)**, mengonversi koordinat emosi ke ruang warna fisik **HSV ➔ RGB ➔ Physical 4-Channel RGBW**, dan mentransmisikan paket frame DMX512 secara *real-time* melalui protokol jaringan **Art-Net UDP (Port 6454)**.
+
+---
+
+## ✨ 2. Fitur Unggulan v7.0.0
+
+- 🎧 **8-Stage Audio Analysis Pipeline:** Ekstraksi fitur akustik menyeluruh via **Librosa** (RMS Energy / Loudness, Tempo / BPM, Onset Strength, Spectral Centroid, Chroma STFT Mayor vs Minor, dan 13 Koefisien MFCC).
+- 🧠 **Russell Circumplex Mood Visualizer:** Plot visual interaktif koordinat 2D *Valence-Arousal* yang memperlihatkan spektrum suasana lagu rohani (*Praise vs Worship*).
+- 🎨 **Physical RGBW Color Mapping Engine:** Algoritma konversi warna *cross-modal* yang memaksimalkan emisi kanal *White* fisik lampu PAR LED panggung tanpa distorsi warna.
+- 🎚️ **Precision DMX512 Channel Mixer:** Fader mixer kontrol kanal 0–255 dengan indikator numerik presisi dan *Master Dimmer Blackout Safety*.
+- 💡 **Fixture Manager & Auto-Patch:** Pengaturan profil fixture lampu (Moving Head Beam 16-Channel, PAR LED RGBW 8/4-Channel) dengan dialog cerdas auto-patching DMX.
+- 🔘 **Live Performance Page Pad (`PageTab`):** Grid tombol kustom untuk memicu (*trigger*) adegan pencahayaan (*Scenes*) dan sekuens ritmis (*Chases*) secara instan saat *live show*.
+- 🖥️ **Interactive 2D Stage Canvas:** Pratinjau visual posisi lampu di atas panggung dengan simulasi sorot berkas cahaya dan *pan/tilt*.
+- 📦 **Windows Inno Setup Installer:** Skrip installer wizard profesional (`installer/zzluxora.iss`) yang mendukung instalasi bersih ke Program Files dan manajemen AppData.
+
+---
+
+## 🏗️ 3. Arsitektur Sistem & Modul Core
+
+Aplikasi dibangun dengan arsitektur 3 lapis (*Three-Layer Architecture*): **Core State**, **UI Panels**, dan **Computational Engines**:
+
+```text
++-----------------------------------------------------------------------------------------+
+|                                ARSITEKTUR ZZLUXORA v7.0                                 |
++-----------------------------------------------------------------------------------------+
+  [1] USER INTERFACE (PySide6 / Qt6):
+      • HeaderBar       : Brand Title, Project Status, Art-Net Pill Indicator, Start/Stop
+      • Collapsible Sidebar : Navigasi ikonik panel dengan toggle state
+      • ProgramPanel    : Container tab multi-fungsi (Address, Audio, Scenes, Chase, Mixer, Page)
+      • SettingsPanel   : Konfigurasi broadcast IP, port, interface jaringan, dan universe
+          │
+          ▼
+  [2] COMPUTATIONAL ENGINES (Python / NumPy / SciPy / Librosa):
+      • audio_engine.py      : Ekstraksi fitur akustik & segmentasi beat
+      • mood_engine.py       : Pemodelan afektif koordinat Valence-Arousal
+      • color_mapping.py     : Transformasi ruang warna HSV ke RGBW
+      • scene_generator.py   : Pembangkit sekuens & palet warna dinamis
+      • scene_player.py      : Playback loop sinkron 40 FPS
+          │
+          ▼
+  [3] NETWORK PROTOCOL LAYER:
+      • artnet_sender.py     : Penyusun paket biner ArtDmx UDP (OpCode 0x5000)
+      • Target Receiver      : Node Mikrokontroler ESP32 DevKit V1 + MAX485 DMX512
++-----------------------------------------------------------------------------------------+
+```
+
+---
+
+## 📁 4. Katalog Direktori
+
+```text
 zzluxora_v7/
-├── main.py                  <- Titik masuk aplikasi (Entry point PySide6)
+├── main.py                  <- Titik masuk aplikasi (Entry Point PySide6)
 ├── main_window.py           <- Jendela utama dengan sistem navigasi sidebar & multi-panel
 ├── config.py / config.ini   <- Pengaturan default, universe Art-Net, & konfigurasi jaringan
 ├── fixture_manager.py       <- Pengelola database lampu panggung & DMX patch map
-├── styles.py                <- Desain tema antarmuka Emerald Green (#2ecc71) & QSS
+├── styles.py                <- Desain tema antarmuka Emerald Green (#2ecc71) & QSS tokens
+├── font_loader.py           <- Pemuat tipografi Windows native
+├── icons.py                 <- Koleksi ikon vektor UI
+├── requirements.txt         <- Daftar pustaka dependensi Python
+├── zzluxora.spec            <- Konfigurasi PyInstaller Onedir Build
 │
-├── engines/                 <- Core computational engines:
-│   ├── artnet_engine.py     <- Art-Net UDP packet builder & socket sender
+├── 📂 engines/              <- Core computational engines:
+│   ├── analyze_pipeline.py  <- 8-stage pipeline orchestrator
+│   ├── artnet_sender.py     <- Art-Net UDP socket packet broadcaster
 │   ├── audio_engine.py      <- Ekstraksi fitur Librosa & deteksi tempo
+│   ├── chase.py             <- Logika chase sequence ritmis
 │   ├── color_mapping.py     <- Konversi ruang warna HSV ke RGBW
+│   ├── color_mixer.py       <- Utilitas pencampur warna & Curve LUT
+│   ├── fixture_types.py     <- Definisi profil kanal DMX
 │   ├── mood_engine.py       <- Model Valence-Arousal mood classifier
-│   ├── scene_generator.py   <- Pembangkit sequence & cue lighting otomatis
-│   └── scene_player.py      <- Playback loop & sinkronisasi frame rate
+│   ├── scene_generator.py   <- Pembangkit scene pencahayaan otomatis
+│   └── va_presets.py        <- Preset koordinat afektif emosi musik
 │
-├── panels/                  <- Panel antarmuka pengguna:
-│   ├── audio_panel.py       <- Visualizer spektrum & parameter audio
-│   ├── dmx_mixer_panel.py   <- Fader kontrol kanal DMX512
-│   ├── fixtures_panel.py    <- Patching & manajemen fixture lampu
-│   ├── live_mode_panel.py   <- Eksekusi langsung live stage performance
-│   ├── mood_panel.py        <- Visualisasi koordinat Valence-Arousal
-│   ├── stage_panel.py       <- Canvas 2D pratinjau panggung
-│   └── settings_panel.py    <- Konfigurasi IP Broadcast & interface jaringan
+├── 📂 panels/               <- Panel antarmuka pengguna:
+│   ├── address_tab.py       <- Manajemen alamat patch DMX
+│   ├── audio_tab.py         <- Visualizer spektrum & parameter audio
+│   ├── chase_tab.py         <- Pengaturan sekuens chase lampu
+│   ├── color_mixer_tab.py   <- Pemilih palet warna manual
+│   ├── fixture_editor_panel.py <- Editor profil lampu DMX
+│   ├── fixture_list_panel.py   <- Daftar lampu yang terpasang
+│   ├── mixer_tab.py         <- Fader kontrol kanal DMX512
+│   ├── output_tab.py        <- Monitor data kanal live
+│   ├── page_tab.py          <- Button pad pemicu adegan live show
+│   ├── preview_tab.py       <- Pratinjau panggung visual 2D
+│   ├── program_panel.py     <- Tab host utama
+│   ├── settings_panel.py    <- Konfigurasi jaringan & Art-Net
+│   └── about_panel.py       <- Informasi lisensi & metadata akademik
 │
-├── fixtures/                <- Definisi profil kanal lampu (.json)
-├── installer/               <- Skrip Inno Setup compiler (zzluxora.iss)
-└── tests/                   <- Unit test matematika model & logika engine
-`
+├── 📂 widgets/              <- Komponen UI kustom (ArtNet pill, Curve editor, Toast, dll)
+├── 📂 fixtures/             <- Profil lampu Generic PAR RGBW 8ch (.json)
+├── 📂 assets/               <- Ikon aplikasi, logo vektor, dan file .ico
+├── 📂 installer/            <- Skrip Inno Setup Compiler (zzluxora.iss)
+└── 📂 tests/                <- Unit tests verifikasi model matematika
+```
 
 ---
 
-## ⚙️ Panduan Instalasi & Menjalankan
+## 🚀 5. Panduan Instalasi & Menjalankan
 
+### Persyaratan Sistem:
+- **Sistem Operasi:** Windows 10 / 11 (64-bit)
+- **Python:** Versi 3.10 atau lebih baru
+
+### Langkah Menjalankan:
 1. **Clone Repositori:**
-   `ash
+   ```powershell
    git clone https://github.com/zzdree/zzluxora-v7.git
    cd zzluxora-v7
-   `
+   ```
 
 2. **Install Dependensi:**
-   `ash
+   ```powershell
    pip install -r requirements.txt
-   `
+   ```
 
 3. **Jalankan Aplikasi:**
-   `ash
+   ```powershell
    python main.py
-   `
+   ```
 
 ---
 
-## 📜 Lisensi
+## 🛠️ 6. Kompilasi Standalone .EXE & Installer
 
-Proyek ini dilisensikan di bawah lisensi **MIT License**.  
-Hak Cipta (c) 2026 **Andreas Restuawanta Christwara (@zzdree)** - Universitas Negeri Semarang.
+### 1. Build Portable Executable (PyInstaller):
+```powershell
+python build.py
+```
+Hasil build akan tersimpan di direktori `dist/zzluxora/` (`zzluxora.exe` + folder `_internal/`).
+
+### 2. Build Windows Setup Wizard (Inno Setup):
+Buka berkas `installer/zzluxora.iss` menggunakan **Inno Setup Compiler**, lalu klik **Compile (Ctrl + F9)**. Installer mandiri `zzluxora-setup-v7.0.0.exe` akan dihasilkan secara otomatis.
+
+---
+
+## 🧪 7. Pengujian Matematis Model (Unit Tests)
+
+Proyek ini dilengkapi dengan modul pengujian unit untuk memvalidasi akurasi formula matematika konversi ruang warna dan ekstraksi parameter audio:
+
+```powershell
+pytest tests/ -v
+```
+
+---
+
+## 📜 8. Lisensi & Hak Cipta
+
+Proyek ini dilisensikan di bawah **MIT License**.  
+Hak Cipta (c) 2026 **Andreas Restuawanta Christwara ([@zzdree](https://github.com/zzdree))** — Universitas Negeri Semarang.
